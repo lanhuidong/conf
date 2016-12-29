@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG" name="Zeno-RPC" monitorInterval="300">
+    <Properties>
+        <!--配置日志文件路径和名称-->
+        <Property name="filename">logs/zeno-rpc-$${date:yyyy-MM-dd}.log</Property>
+	<!--在tomcat中可使用如下配置
+        <Property name="filename">${catalina.base}/logs/zeno-rpc-$${date:yyyy-MM-dd}.log</Property>
+	-->
+    </Properties>
+    <Appenders>
+        <Console name="STDOUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <List name="List">
+            <ThresholdFilter level="debug"/>
+        </List>
+        <Routing name="Routing">
+            <Routes pattern="$${sd:type}">
+                <Route>
+		    <!--配置日志文件路径和名称-->
+                    <RollingFile name="Rolling" fileName="${filename}" filePattern="logs/zeno-rpc-%d{yyyy-MM-dd}.%i.log.gz">
+		    <!--在tomcat中可使用如下配置
+                    <RollingFile name="Rolling" fileName="${filename}" filePattern="logs/zeno-rpc-%d{yyyy-MM-dd}.%i.log.gz">
+		    -->
+                        <PatternLayout>
+                            <pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
+                        </PatternLayout>
+                        <immediateFlush>true</immediateFlush>
+			<!--总共保留20个日志文件-->
+                        <DefaultRolloverStrategy max="20"/>
+                        <Policies>
+			     <!--每6个小时滚动日志，并且在0,6,12,18时滚动-->
+                            <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
+                            <SizeBasedTriggeringPolicy size="100 MB"/>
+                        </Policies>
+                    </RollingFile>
+                </Route>
+                <Route AppenderRef="STDOUT" key="Audit"/>
+                <Route AppenderRef="List" key="Service"/>
+            </Routes>
+        </Routing>
+    </Appenders>
+    <Loggers>
+        <!--修改包名-->
+        <Logger name="cn.intelvision.rpc" level="info" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="Routing"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="Routing"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -9,6 +9,9 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 	    <!--修改日志文件的存储位置和文件名 -->
             <fileNamePattern>logs/virgo-data-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+	    <!--在tomcat中可使用如下配置
+            <fileNamePattern>${catalina.base}/logs/virgo-data-%d{yyyy-MM-dd}.%i.gz</fileNamePattern>
+	    -->
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
