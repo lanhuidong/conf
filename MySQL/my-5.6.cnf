@@ -35,3 +35,9 @@ long_query_time=10
 log_output=TABLE
 
 sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES 
+
+# 下面3行配置在小内存主机上很管用，比如自己玩的1G内存的云主机上
+# 默认配置下MySQL启动要占400-500MB内存，加入下面3行后降至70-80MB
+performance_schema_max_table_instances=400
+table_definition_cache=400
+table_open_cache=256
