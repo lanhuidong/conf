@@ -1,7 +1,7 @@
 #!/bin/sh
 JAVA_HOME=/usr/local/jdk1.8.0_45
 
-APP_HOME=$(cd "../$(dirname "$0")"; pwd)
+APP_HOME=$(cd "$(dirname "$0")"; cd ..; pwd)
 
 APP_MAIN=com.nexusy.App
 
@@ -36,10 +36,34 @@ startup()
     fi
 }
 
+checkPidExist()
+{
+    pids=`ps x|grep -v grep|grep $APP_MAIN|awk '{print $1}'`
+    r=0
+    for id in $pids
+    do
+        if [ $id -eq `cat $APP_PID_FILE` ];then
+	    r=1
+            break
+	fi
+    done
+    return $r
+}
+
 shutdown()
 {
     if [ -f $APP_PID_FILE ];then
         kill `cat $APP_PID_FILE`
+	i=0
+        checkPidExist
+	while [[ $? -eq 1 && $i -lt 20 ]]
+	do
+	    echo -e '.\c'
+	    sleep 1
+	    i=$(($i+1))
+	    checkPidExist
+	done
+        echo '.'
         rm $APP_PID_FILE
         echo 'app server shutdown successfully.'
     else
@@ -54,6 +78,10 @@ case $1 in
     stop)
         shutdown
         ;;
+    restart)
+        shutdown
+        startup
+        ;;
     *)
-    echo 'Usage: $0 {start|stop}'
+    echo "Usage: $0 {start|stop|restart}"
 esac
