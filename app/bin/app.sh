@@ -28,7 +28,7 @@ startup()
         fi
     fi
     if [ ! -f $APP_PID_FILE ];then
-        java $JAVA_OPTS -cp $APP_HOME/conf/:$APP_HOME/lib/*:. $APP_MAIN 2>>$APP_HOME/logs/app.out 1>>$APP_HOME/logs/app.out &
+        nohup java $JAVA_OPTS -cp $APP_HOME/conf/:$APP_HOME/lib/*:. $APP_MAIN 2>>$APP_HOME/logs/app.out 1>>$APP_HOME/logs/app.out &
         echo $!>$APP_PID_FILE
         echo 'app server start up successfully.'
     else
