@@ -18,7 +18,7 @@
             <Routes pattern="$${sd:type}">
                 <Route>
 		            <!--配置日志文件路径和名称-->
-                    <RollingFile name="Rolling" fileName="${filename}" filePattern="logs/zeno-rpc-%d{yyyy-MM-dd-HH}.%i.log.gz">
+                    <RollingRandomAccessFile name="Rolling" fileName="${filename}" filePattern="logs/zeno-rpc-%d{yyyy-MM-dd-HH}.%i.log.gz">
 		            <!--在tomcat中可使用如下配置
                     <RollingFile name="Rolling" fileName="${filename}" filePattern="${sys:catalina.base}/logs/zeno-rpc-%d{yyyy-MM-dd-HH}.%i.log.gz">
 		            -->
@@ -26,14 +26,18 @@
                             <pattern>%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
                         </PatternLayout>
                         <immediateFlush>true</immediateFlush>
-			            <!--总共保留20个日志文件-->
-                        <DefaultRolloverStrategy max="20"/>
+                        <DefaultRolloverStrategy max="20">
+                            <Delete basePath="logs" maxDepth="1">
+                                <IfFileName glob="zeno-rpc-*.log.gz"/>
+                                <IfLastModified age="20d"/>
+                            </Delete>
+                        </DefaultRolloverStrategy>
                         <Policies>
 			                <!--每6个小时滚动日志，并且在0,6,12,18时滚动-->
                             <TimeBasedTriggeringPolicy interval="6" modulate="true"/>
                             <SizeBasedTriggeringPolicy size="100 MB"/>
                         </Policies>
-                    </RollingFile>
+                    </RollingRandomAccessFile>
                 </Route>
                 <Route ref="STDOUT" key="Audit"/>
                 <Route ref="List" key="Service"/>
